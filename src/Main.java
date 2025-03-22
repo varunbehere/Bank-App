@@ -1,3 +1,4 @@
+import java.util.IllformedLocaleException;
 import java.util.Scanner;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -5,7 +6,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // User inputs their name and account type
         System.out.print("Enter your name: ");
         String name = scanner.nextLine();
 
@@ -15,12 +15,9 @@ public class Main {
         System.out.print("Enter initial balance: ");
         double initialBalance = scanner.nextDouble();
 
-        BankAccount account;
-        if (accountType == 1) {
-            account = new SavingsAccount(name, initialBalance);
-        } else {
-            account = new CurrentAccount(name, initialBalance);
-        }
+        BankAccount account = (accountType == 1)
+            ? new SavingsAccount(name, initialBalance)
+            : new CurrentAccount(name, initialBalance);
 
         account.displayAccountDetails();
 
@@ -39,12 +36,22 @@ public class Main {
                 case 1:
                     System.out.print("Enter deposit amount: ");
                     double depositAmount = scanner.nextDouble();
-                    account.deposit(depositAmount);
+                    try {
+                        account.deposit(depositAmount);
+                    }
+                    catch (IllegalArgumentException e){
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 2:
                     System.out.print("Enter withdrawal amount: ");
                     double withdrawAmount = scanner.nextDouble();
-                    account.withdraw(withdrawAmount);
+                    try{
+                        account.withdraw(withdrawAmount);
+                    } catch (IllegalArgumentException | InsufficientBalanceException e) {
+                        System.out.println(e.getMessage());;
+                    }
+
                     break;
                 case 3:
                     account.displayBalance();
